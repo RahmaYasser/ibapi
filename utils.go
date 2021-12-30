@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap/zapcore"
+	//"log"
 
 	//"go.uber.org/zap/zapcore"
 	"io"
@@ -30,7 +31,8 @@ const (
 	MAX_MSG_LEN int = 0xFFFFFF
 )
 
-var log *zap.Logger
+var log *zap.SugaredLogger
+//var sugarLogger *zap.SugaredLogger
 
 
 func getEncoder() zapcore.Encoder {
@@ -54,19 +56,21 @@ func init() {
 	writeSyncer := getLogWriter()
 	encoder := getEncoder()
 	core := zapcore.NewCore(encoder, writeSyncer, zapcore.DebugLevel)
-	log = zap.New(core, zap.AddCaller())
+	logger := zap.New(core, zap.AddCaller())
+	log = logger.Sugar()
+	//log = zap.New(core, zap.AddCaller())
 	//log, _ = zap.NewProduction()
 }
 
 // APILogger sets the options of internal logger for API, such as level, encoder, output, see uber.org/zap for more information
-func SetAPILogger(cfg zap.Config, opts ...zap.Option) error {
+/*func SetAPILogger(cfg zap.Config, opts ...zap.Option) error {
 	newlogger, err := cfg.Build(opts...)
 	log = newlogger
 	return err
-}
+}*/
 
 // GetLogger gets a clone of the internal logger with the option, see uber.org/zap for more information
-func GetLogger() *zap.Logger {
+func GetLogger() *zap.SugaredLogger {
 	return log
 }
 
